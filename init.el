@@ -9,11 +9,12 @@
 (setq show-paren-style 'expression)
 (show-paren-mode 2)
 
+(set-face-attribute 'default nil
+		    :family "PragmataPro")
+
 (setq make-backup-files nil)
 (setq auto-save-list-file-name nil)
 (setq auto-save-default nil)
-
-(global-linum-mode 1)
 
 (ido-mode 1)
 (setq ido-enable-flex-matching t)
@@ -40,10 +41,24 @@
   (exec-path-from-shell-initialize)
   )
 
+(use-package linum
+  :config
+  (progn
+    (setq linum-format "%3d ")
+    (global-linum-mode 1)
+    )
+  )
+
+(use-package auto-complete
+  :ensure t
+  :config
+  (ac-config-default)
+  )
 
 (use-package projectile
   :ensure projectile
-  :config (projectile-global-mode t))
+  :config (projectile-global-mode t)
+  )
 
 (use-package magit
   :ensure magit
@@ -51,7 +66,12 @@
 
 (use-package git-gutter+
   :ensure t
-  :init (global-git-gutter+-mode))
+  :config
+  (progn
+    (global-git-gutter+-mode)
+    ;; (git-gutter+:linum-setup)
+    )
+  )
 
 (use-package tex
   :ensure auctex
