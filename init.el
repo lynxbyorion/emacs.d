@@ -10,7 +10,9 @@
 (show-paren-mode 2)
 
 (set-face-attribute 'default nil
-		    :family "PragmataPro")
+		    :family "PragmataPro"
+		    :height 130
+		    )
 
 (setq make-backup-files nil)
 (setq auto-save-list-file-name nil)
