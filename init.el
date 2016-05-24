@@ -8,8 +8,8 @@
 (show-paren-mode 2)
 
 (set-face-attribute 'default nil
-		    :family "PragmataPro"
-		    :height 130
+		    :family "Hack"
+		    :height 120
 		    )
 
 (setq make-backup-files nil)
@@ -78,9 +78,9 @@
   :config
   (setq TeX-auto-save t)
   (setq TeX-parse-self t)
-  (setq TeX-PDF-mode t)
-  (setq-default TeX-master nil)
-  :ensure latex-preview-pane
-  :config
-  '(latex-preview-pane-multifile-mode (quote auctex))
+  (setq TeX-PDF-mode nil)
   )
+
+(setq ispell-program-name "aspell")
+(setq ispell-dictionary "ru")
+
