@@ -272,19 +272,40 @@
   :config (projectile-global-mode t)
   )
 
+;;; Highlight hunks in fringe
+(use-package diff-hl
+  :ensure t
+  :defer t
+  :init
+  ;; Highlight changes to the current file in the fringe
+  (global-diff-hl-mode)
+  ;; Highlight changed files in the fringe of Dired
+  (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+
+  ;; Fall back to the display margin, if the fringe is unavailable
+  (unless (display-graphic-p)
+    (diff-hl-margin-mode))
+
+  ;; Refresh diff-hl after Magit operations
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))
 
 (use-package magit
   :ensure magit
   )
 
-(use-package git-gutter+
-  :ensure t
-  :config
-  (progn
-    (global-git-gutter+-mode)
-    ;; (git-gutter+:linum-setup)
-    )
-  )
+ (use-package ediff
+    :defer t
+    :init
+    (progn
+      ;; first we set some sane defaults
+      (setq-default
+       ediff-window-setup-function 'ediff-setup-windows-plain
+       ;; emacs is evil and decrees that vertical shall henceforth be horizontal
+       ediff-split-window-function 'split-window-horizontally
+       ediff-merge-split-window-function 'split-window-horizontally)
+      ;; restore window layout when done
+      (add-hook 'ediff-quit-hook #'winner-undo))))
+
 
 (use-package tex
   :ensure auctex
@@ -381,70 +402,95 @@
 
 (bind-key "C-c x i" #'indent-region)
 
-;;; Buffer, Windows and Frames
-(setq frame-resize-pixelwise t          ; Resize by pixels
-      frame-title-format
-      '(:eval (if (buffer-file-name)
-                  (abbreviate-file-name (buffer-file-name)) "%b"))
-      ;; Size new windows proportionally wrt other windows
-      window-combination-resize t)
+;; ;;; Buffer, Windows and Frames
+;; (setq frame-resize-pixelwise t          ; Resize by pixels
+;;       frame-title-format
+;;       '(:eval (if (buffer-file-name)
+;;                   (abbreviate-file-name (buffer-file-name)) "%b"))
+;;       ;; Size new windows proportionally wrt other windows
+;;       window-combination-resize t)
 
-(setq-default line-spacing 0.2)         ; A bit more spacing between lines
+;; (setq-default line-spacing 0.2)         ; A bit more spacing between lines
 
-(defun lunaryorn-display-buffer-fullframe (buffer alist)
-  "Display BUFFER in fullscreen.
-ALIST is a `display-buffer' ALIST.
-Return the new window for BUFFER."
-  (let ((window (display-buffer-pop-up-window buffer alist)))
-    (when window
-      (delete-other-windows window))
-    window))
+;; (defun lunaryorn-display-buffer-fullframe (buffer alist)
+;;   "Display BUFFER in fullscreen.
+;; ALIST is a `display-buffer' ALIST.
+;; Return the new window for BUFFER."
+;;   (let ((window (display-buffer-pop-up-window buffer alist)))
+;;     (when window
+;;       (delete-other-windows window))
+;;     window))
 
-;; Configure `display-buffer' behaviour for some special buffers.
-(setq display-buffer-alist
-      `(
-        ;; Magit status window in fullscreen
-        (,(rx "*magit: ")
-         (lunaryorn-display-buffer-fullframe)
-         (reusable-frames . nil))
-        ;; Give Helm Help a non-side window because Helm as very peculiar ideas
-        ;; about how to display its help
-        (,(rx bos "*Helm Help" (* nonl) "*" eos)
-         (display-buffer-use-some-window
-          display-buffer-pop-up-window))
-        ;; Nail Helm to the side window
-        (,(rx bos "*" (* nonl) "helm" (* nonl) "*" eos)
-         (display-buffer-in-side-window)
-         (side . bottom)
-         (window-height . 0.4)
-         (window-width . 0.6))
-        ;; Put REPLs and error lists into the bottom side window
-        (,(rx bos
-              (or "*Help"                 ; Help buffers
-                  "*Warnings*"            ; Emacs warnings
-                  "*compilation"          ; Compilation buffers
-                  "*Flycheck errors*"     ; Flycheck error list
-                  "*shell"                ; Shell window
-                  "*sbt"                  ; SBT REPL and compilation buffer
-                  "*ensime-update*"       ; Server update from Ensime
-                  "*SQL"                  ; SQL REPL
-                  "*Cargo"                ; Cargo process buffers
-                  (and (1+ nonl) " output*") ; AUCTeX command output
-                  ))
-         (display-buffer-reuse-window
-          display-buffer-in-side-window)
-         (side            . bottom)
-         (reusable-frames . visible)
-         (window-height   . 0.33))
-        ;; Let `display-buffer' reuse visible frames for all buffers.  This must
-        ;; be the last entry in `display-buffer-alist', because it overrides any
-        ;; later entry with more specific actions.
-        ("." nil (reusable-frames . visible))))
+;; ;; Configure `display-buffer' behaviour for some special buffers.
+;; (setq display-buffer-alist
+;;       `(
+;;         ;; Magit status window in fullscreen
+;;         (,(rx "*magit: ")
+;;          (lunaryorn-display-buffer-fullframe)
+;;          (reusable-frames . nil))
+;;         ;; Give Helm Help a non-side window because Helm as very peculiar ideas
+;;         ;; about how to display its help
+;;         (,(rx bos "*Helm Help" (* nonl) "*" eos)
+;;          (display-buffer-use-some-window
+;;           display-buffer-pop-up-window))
+;;         ;; Nail Helm to the side window
+;;         (,(rx bos "*" (* nonl) "helm" (* nonl) "*" eos)
+;;          (display-buffer-in-side-window)
+;;          (side . bottom)
+;;          (window-height . 0.4)
+;;          (window-width . 0.6))
+;;         ;; Put REPLs and error lists into the bottom side window
+;;         (,(rx bos
+;;               (or "*Help"                 ; Help buffers
+;;                   "*Warnings*"            ; Emacs warnings
+;;                   "*compilation"          ; Compilation buffers
+;;                   "*Flycheck errors*"     ; Flycheck error list
+;;                   "*shell"                ; Shell window
+;;                   "*sbt"                  ; SBT REPL and compilation buffer
+;;                   "*ensime-update*"       ; Server update from Ensime
+;;                   "*SQL"                  ; SQL REPL
+;;                   "*Cargo"                ; Cargo process buffers
+;;                   (and (1+ nonl) " output*") ; AUCTeX command output
+;;                   ))
+;;          (display-buffer-reuse-window
+;;           display-buffer-in-side-window)
+;;          (side            . bottom)
+;;          (reusable-frames . visible)
+;;          (window-height   . 0.33))
+;;         ;; Let `display-buffer' reuse visible frames for all buffers.  This must
+;;         ;; be the last entry in `display-buffer-alist', because it overrides any
+;;         ;; later entry with more specific actions.
+;;         ("." nil (reusable-frames . visible))))
 
-(use-package frame                      ; Frames
-  :bind (("C-c w F" . toggle-frame-fullscreen))
-  :init (progn
-          ;; Kill `suspend-frame'
-          (global-set-key (kbd "C-z") nil)
-          (global-set-key (kbd "C-x C-z") nil))
-  :config (add-to-list 'initial-frame-alist '(fullscreen . fullboth)))
+;; (use-package frame                      ; Frames
+;;   :bind (("C-c w F" . toggle-frame-fullscreen))
+;;   :init (progn
+;;           ;; Kill `suspend-frame'
+;;           (global-set-key (kbd "C-z") nil)
+;;           (global-set-key (kbd "C-x C-z") nil))
+;;   :config (add-to-list 'initial-frame-alist '(fullscreen . fullboth)))
+
+
+;; ;; OS X support
+;; (use-package ns-win                     ; OS X window support
+;;   :defer t
+;;   :if (eq system-type 'darwin)
+;;   :config
+;;   (setq ns-pop-up-frames nil
+;;         pop-up-windows nil
+;;                                         ; Don't pop up new frames from the
+;;                                         ; workspace
+;;         mac-option-modifier 'meta       ; Option is simply the natural Meta
+;;         mac-command-modifier 'meta      ; But command is a lot easier to hit
+;;         mac-right-command-modifier 'left
+;;         mac-right-option-modifier 'none ; Keep right option for accented input
+;;         ;; Just in case we ever need these keys
+;;         mac-function-modifier 'hyper))
+
+;; (setq magit-restore-window-configuration t) ; that's the default actually
+;; (setq magit-status-buffer-switch-function
+;;       (lambda (buffer) ; there might already be an Emacs function which does this
+;;         (pop-to-buffer buffer)
+;;         (delete-other-windows)))
+
+;; (setq pop-up-windows nil)
