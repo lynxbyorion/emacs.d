@@ -293,6 +293,7 @@
 
 (use-package magit
   :ensure magit
+  :bind ("C-x g" . magit-status)
   )
 
  (use-package ediff
