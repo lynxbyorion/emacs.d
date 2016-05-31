@@ -147,8 +147,10 @@
 
 ;;; The server of `emacsclient'
 (use-package server
-  :defer t
-  :init (server-mode)
+  :ensure nil
+  :config
+  (unless (server-running-p)
+    (server-start))
   :diminish (server-buffer-clients . " ⓒ"))
 
 ;;; Edit directories
