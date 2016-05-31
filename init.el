@@ -42,10 +42,6 @@
   (exec-path-from-shell-initialize)
   )
 
-;;; Customization
-(defconst lynxbyorion-custom-file (locate-user-emacs-file "custom.el")
-  "File used to store settings from Customization UI.")
-
 ;;; Colour theme
 (use-package solarized
   :ensure solarized-theme
@@ -505,3 +501,8 @@
 ;;         (delete-other-windows)))
 
 ;; (setq pop-up-windows nil)
+
+;;; save custom settings (unversioned) locally
+(setq custom-file (expand-file-name
+                   "init-local.el"
+                   (expand-file-name "lisp" user-emacs-directory)))
