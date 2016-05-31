@@ -304,7 +304,7 @@
        ediff-split-window-function 'split-window-horizontally
        ediff-merge-split-window-function 'split-window-horizontally)
       ;; restore window layout when done
-      (add-hook 'ediff-quit-hook #'winner-undo))))
+      (add-hook 'ediff-quit-hook #'winner-undo)))
 
 
 (use-package tex
