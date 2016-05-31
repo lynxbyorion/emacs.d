@@ -472,6 +472,14 @@
 ;;           (global-set-key (kbd "C-x C-z") nil))
 ;;   :config (add-to-list 'initial-frame-alist '(fullscreen . fullboth)))
 
+;; don't open files from the workspace in a new frame
+(setq ns-pop-up-frames nil)
+
+;; use old-style fullscreen
+(setq ns-use-native-fullscreen nil)
+
+;; move deleted files to ~/.Trash
+(setq trash-directory "~/.Trash")
 
 ;; ;; OS X support
 ;; (use-package ns-win                     ; OS X window support
