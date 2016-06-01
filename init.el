@@ -2,6 +2,9 @@
 ;; Author: lynxbyorion.
 ;; based on https://github.com/lunaryorn/.emacs.d
 
+;; add ~/.emacs.d/lisp to load path
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
 ;; Please don't load outdated byte code
 (setq load-prefer-newer t)
 
@@ -506,3 +509,5 @@
 (setq custom-file (expand-file-name
                    "init-local.el"
                    (expand-file-name "lisp" user-emacs-directory)))
+
+(require 'init-behavior)
