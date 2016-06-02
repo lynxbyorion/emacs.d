@@ -194,9 +194,7 @@
 
 ;;; Save carriage place in file
 (use-package saveplace
-	  :init
-	  (setq-default save-place t)
-	  (setq save-place-forget-unreadable-files nil))
+  :init (save-place-mode 1))
 
 (setq view-read-only t)
 
