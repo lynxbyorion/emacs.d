@@ -235,11 +235,6 @@
     )
   )
 
-(use-package visual-fill-column         ; Fill column wrapping for Visual Line Mode
-  :ensure t
-  :defer t
-  :init (add-hook 'visual-line-mode-hook #'visual-fill-column-mode))
-
 (use-package hl-line                    ; Highlight the current line
   :init (global-hl-line-mode 1))
 
@@ -509,3 +504,9 @@
                    (expand-file-name "lisp" user-emacs-directory)))
 
 (require 'init-behavior)
+
+(use-package fill-column-indicator
+  :ensure fill-column-indicator
+  :config
+  (add-hook 'prog-mode-hook 'fci-mode)
+  (add-hook 'LaTeX-mode-hook 'fci-mode))
