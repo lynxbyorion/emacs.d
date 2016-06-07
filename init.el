@@ -510,3 +510,13 @@
   :config
   (add-hook 'prog-mode-hook 'fci-mode)
   (add-hook 'LaTeX-mode-hook 'fci-mode))
+
+;; List of additional LaTeX packages
+(use-package org-latex
+  :init
+  (progn
+    (require 'ox-latex)
+    (setq org-latex-listings t)
+    (add-to-list 'org-latex-packages-alist '("" "cmap" t))
+    (add-to-list 'org-latex-packages-alist '("english,russian" "babel"))
+  ))
