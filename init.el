@@ -8,8 +8,12 @@
 ;; Please don't load outdated byte code
 (setq load-prefer-newer t)
 
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
+(if (display-graphic-p)
+    (progn
+      (tool-bar-mode -1)
+      (scroll-bar-mode -1)))
+
+
 
 (setq show-paren-style 'expression)
 (show-paren-mode 2)
@@ -520,3 +524,76 @@
     (add-to-list 'org-latex-packages-alist '("" "cmap" t))
     (add-to-list 'org-latex-packages-alist '("english,russian" "babel"))
   ))
+
+(defun custom_org_auto_check()
+  (org-update-checkbox-count t)
+  )
+
+(add-hook 'org-mode-hook
+          (lambda ()
+             (add-hook 'before-save-hook 'custom_org_auto_check nil 'make-it-local)))
+
+(setq mac-command-modifier 'meta
+        mac-option-modifier 'none
+        default-input-method "MacOSX")
+
+(setq default-input-method "russian-computer")
+
+
+(use-package company                    ; Graphical (auto-)completion
+  :ensure t
+  :init (global-company-mode)
+  :config
+  (setq company-tooltip-align-annotations t
+        company-tooltip-flip-when-above t
+        ;; Easy navigation to candidates with M-<n>
+        company-show-numbers t)
+  :diminish company-mode)
+
+(use-package company-quickhelp          ; Show help in tooltip
+  :ensure t
+  :after company
+  :config (company-quickhelp-mode))
+
+(use-package multiple-cursors
+  :ensure t
+  :config)
+
+(use-package org-redmine
+  :ensure t
+  :init
+  :config (setq org-redmine-uri "http://develop.res.rtimints.ojsc/redmine")
+          (setq org-redmine-auth-username "lynxbyorion")
+          (setq org-redmine-auth-password ""))
+
+
+(use-package mediawiki
+  :ensure mediawiki)
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
+
+(put 'set-goal-column 'disabled nil)
+
+(use-package anzu                       ; Position/matches count for isearch
+  :ensure t
+  :bind
+  (([remap query-replace] . anzu-query-replace)
+   ([remap query-replace-regexp] . anzu-query-replace-regexp)
+   :map isearch-mode-map
+   ([remap isearch-query-replace] . anzu-isearch-query-replace)
+   ([remap isearch-query-replace-regexp] . anzu-isearch-query-replace-regexp))
+  :init (global-anzu-mode)
+  :config (setq anzu-cons-mode-line-p nil)
+  :diminish anzu-mode)
+
+(use-package textile-mode
+  :ensure)
+
+(use-package go-mode
+  :ensure t
+  :config
+  (add-hook 'before-save-hook #'gofmt-before-save))
+
+(use-package company-go
+  :init (with-eval-after-load 'company
+          (add-to-list 'company-backends 'company-go)))
