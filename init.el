@@ -567,11 +567,6 @@
           (setq org-redmine-auth-password ""))
 
 
-(use-package mediawiki
-  :ensure mediawiki)
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
-
 (put 'set-goal-column 'disabled nil)
 
 (use-package anzu                       ; Position/matches count for isearch
